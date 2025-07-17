@@ -1860,7 +1860,26 @@ var GPUSkinController = (function () {
             }
 
             outputMat = md.m43MulTranspose(invBoneLTMs[b], ltm, outputMat);
-            output.setData(outputMat, offset, 12);
+            
+            // output.setData(outputMat, offset, 12);
+            // "output" is a TechniqueParameterBuffer which extends Float32Array
+            // TechniqueParameterBuffer.setData(data, offset, length)
+            // @see https://github.com/turbulenz/turbulenz_engine/blob/403ef0dadbe93aac3122928441cc0cb8b075b1cf/tslib/turbulenz.d.ts#L428
+            // @see https://github.com/turbulenz/turbulenz_engine/blob/403ef0dadbe93aac3122928441cc0cb8b075b1cf/tslib/vmath.ts#L6020
+
+            function _setData(target, buffer, offset, length) {
+                if (offset === undefined) {
+                    offset = 0;
+                };
+                if (length === undefined) {
+                    length = target.length;
+                };
+                for (let i = 0; i < length; i += 1, offset += 1) {
+                    target[offset] = buffer[i];
+                }
+            }
+
+            _setData(output, outputMat, offset, 12);
             offset += 12;
         }
 
